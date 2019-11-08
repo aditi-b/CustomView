@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+<androidx.appcompat.widget.LinearLayoutCompat
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="20dp"
+    android:orientation="vertical">
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:padding="10dp"
+        android:useDefaultMargins="true"
+        android:alignmentMode="alignBounds"
+        android:background="@drawable/bg_rounded_corners"
+        android:columnCount="3"
+        android:rowCount="3">
+
+        <include
+            android:id="@+id/grid_1"
+            layout="@layout/layout_grid_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"/>
+
+        <include
+            android:id="@+id/grid_2"
+            layout="@layout/layout_grid_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"/>
+
+        <include
+            android:id="@+id/grid_3"
+            layout="@layout/layout_grid_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"/>
+
+        <include
+            android:id="@+id/grid_4"
+            layout="@layout/layout_grid_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"/>
+
+        <include
+            android:id="@+id/grid_5"
+            layout="@layout/layout_grid_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"/>
+
+        <include
+            android:id="@+id/grid_6"
+            layout="@layout/layout_grid_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"/>
+
+        <include
+            android:id="@+id/grid_7"
+            layout="@layout/layout_grid_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"/>
+
+        <include
+            android:id="@+id/grid_8"
+            layout="@layout/layout_grid_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"/>
+
+    </GridLayout>
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/lineCartView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center_horizontal"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
+</ScrollView>
