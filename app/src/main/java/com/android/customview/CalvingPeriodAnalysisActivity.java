@@ -1,24 +1,29 @@
 package com.android.customview;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -44,7 +49,7 @@ public class CalvingPeriodAnalysisActivity extends AppCompatActivity {
     AppCompatTextView tvCountNo1;
     @BindView(R.id.iv_image)
     AppCompatImageView ivImage;
-//    @BindView(R.id.tv_title)
+    //    @BindView(R.id.tv_title)
 //    AppCompatTextView tvTitle2;
 //    @BindView(R.id.tv_count_no)
 //    AppCompatTextView tvCountNo2;
@@ -72,15 +77,30 @@ public class CalvingPeriodAnalysisActivity extends AppCompatActivity {
 //    AppCompatTextView tvTitle8;
 //    @BindView(R.id.tv_count_no)
 //    AppCompatTextView tvCountNo8;
-
     private LineChart lineChartView;
     private LineData chart;
-    private String[] images =new String[]{"https://homepages.cae.wisc.edu/~ece533/images/airplane.png",
+    private String[] images = new String[]{"https://homepages.cae.wisc.edu/~ece533/images/airplane.png",
             "https://homepages.cae.wisc.edu/~ece533/images/arctichare.png"
-    ,"https://homepages.cae.wisc.edu/~ece533/images/baboon.png"
-            ,"https://homepages.cae.wisc.edu/~ece533/images/baboon.png"
-            ,"https://homepages.cae.wisc.edu/~ece533/images/baboon.png"};
+            , "https://homepages.cae.wisc.edu/~ece533/images/baboon.png"
+            , "https://homepages.cae.wisc.edu/~ece533/images/baboon.png"
+            , "https://homepages.cae.wisc.edu/~ece533/images/baboon.png"};
+    private View[] bitmapList;
+    private float[] data;
 
+    public static Bitmap createBitmapFromView(View customMarkerView) {
+        customMarkerView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        customMarkerView.layout(0, 0, customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight());
+        customMarkerView.buildDrawingCache();
+        Bitmap returnedBitmap = Bitmap.createBitmap(customMarkerView.getMeasuredWidth(), customMarkerView.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        canvas.drawColor(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        Drawable drawable = customMarkerView.getBackground();
+        if (drawable != null)
+            drawable.draw(canvas);
+        customMarkerView.draw(canvas);
+        return returnedBitmap;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +121,7 @@ public class CalvingPeriodAnalysisActivity extends AppCompatActivity {
         View grid7 = findViewById(R.id.grid_7);
         View grid8 = findViewById(R.id.grid_8);
         lineChartView = findViewById(R.id.lineCartView);
-        lineChartView.setScaleEnabled(false);
+
         XAxis xAxis = lineChartView.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         setUpBlueLine();
@@ -143,26 +163,6 @@ public class CalvingPeriodAnalysisActivity extends AppCompatActivity {
         tvNumber8.setText("7");
     }
 
-    private void setUpBlueLine() {
-        float[] data = {1f, 2f, 3f, 4f, 5f};
-        ArrayList<Entry> entries = new ArrayList<>();
-        for (float datum : data) {
-            entries.add(new Entry(datum, datum + 1, R.drawable.android));
-
-        }
-        LineDataSet dataSet = new LineDataSet(entries, "Blue");
-        chart.addDataSet(dataSet);
-        Bitmap starBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.android);
-//        RoundedBitmapDrawable roundedBitmapDrawable= RoundedBitmapDrawableFactory.create(getResources(), starBitmap);
-        LinearLayout view = findViewById(R.id.ll_custom_linear);
-        view.setDrawingCacheEnabled(true);
-        view.buildDrawingCache();
-        Bitmap bm = view.getDrawingCache();
-        lineChartView.setRenderer(new ImageLineChartRenderer(lineChartView, lineChartView.getAnimator(),
-                lineChartView.getViewPortHandler(), GetBitmapClippedCircle(bm)));
-        lineChartView.setData(chart);
-    }
-
 //    private void setUpYellowLine() {
 //        ArrayList<Entry> entriesYellow = new ArrayList<>();
 //        entriesYellow.add(new Entry(0f, 0f, R.drawable.ic_insert_emoticon));
@@ -177,12 +177,23 @@ public class CalvingPeriodAnalysisActivity extends AppCompatActivity {
 //        lineChartView.invalidate();
 //    }
 
-    public static Bitmap loadBitmapFromView(View v) {
-        Bitmap b = Bitmap.createBitmap( v.getLayoutParams().width, v.getLayoutParams().height, Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(b);
-        v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
-        v.draw(c);
-        return b;
+    private void setUpBlueLine() {
+        data = new float[]{1f, 2f, 3f, 4f, 5f};
+        bitmapList = new View[data.length];
+        for (int i = 0; i < data.length; i++) {
+            bitmapList[i] = LayoutInflater.from(this).inflate(R.layout.layout_custom_data_point, null);
+            ((AppCompatTextView) bitmapList[i].findViewById(R.id.tv_custm_text)).setText("" + i);
+        }
+        lineChartView.setScaleEnabled(false);
+        lineChartView.getAxisRight().setAxisMinimum(0);
+        lineChartView.getAxisRight().setAxisMaximum(2f);
+        lineChartView.setDragXEnabled(true);
+        lineChartView.setVisibleXRangeMaximum(4);
+        lineChartView.moveViewToX(0);
+
+        for (int i = 0; i < data.length; i++) {
+            loadImage(images[i], i);
+        }
     }
 
     private Bitmap GetBitmapClippedCircle(Bitmap bitmap) {
@@ -204,16 +215,42 @@ public class CalvingPeriodAnalysisActivity extends AppCompatActivity {
         return outputBitmap;
     }
 
+
+    private void loadImage(String url, final int position) {
+        Glide.with(this)
+                .load(url)
+                .apply(RequestOptions.circleCropTransform())
+                .into(new CustomTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        ((ImageView) bitmapList[position].findViewById(R.id.iv_custom_image)).setImageDrawable(resource);
+                        ArrayList<Entry> entries = new ArrayList<>();
+                        for (int i = 0; i < data.length; i++) {
+                            entries.add(i, new Entry(data[i], data[i] + 1, new BitmapDrawable(getResources(), createBitmapFromView(bitmapList[i]))));
+                        }
+                        LineDataSet dataSet = new LineDataSet(entries, "");
+                        chart.addDataSet(dataSet);
+                        chart.setDrawValues(false);
+                        lineChartView.setData(chart);
+                        lineChartView.invalidate();
+                        lineChartView.refreshDrawableState();
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                        Log.e("a", "onLoadCleared: ");
+                    }
+                });
+    }
+
     class ImageLineChartRenderer extends LineChartRenderer {
-        private final Bitmap image;
-
-
-        ImageLineChartRenderer(LineChart chart, ChartAnimator animator, ViewPortHandler viewPortHandler, Bitmap image) {
-            super(chart, animator, viewPortHandler);
-            this.image = image;
-        }
-
+        private final View[] imageList;
         private float[] mCirclesBuffer = new float[2];
+
+        ImageLineChartRenderer(LineChart chart, ChartAnimator animator, ViewPortHandler viewPortHandler, View[] imageList) {
+            super(chart, animator, viewPortHandler);
+            this.imageList = imageList;
+        }
 
         @Override
         protected void drawCircles(Canvas c) {
@@ -232,9 +269,9 @@ public class CalvingPeriodAnalysisActivity extends AppCompatActivity {
             Bitmap[] scaledBitmaps = new Bitmap[dataSets.size()];
             float[] scaledBitmapOffsets = new float[dataSets.size()];
             for (int i = 0; i < dataSets.size(); i++) {
-                float imageSize = dataSets.get(i).getCircleRadius() * 10;
+                float imageSize = dataSets.get(i).getCircleRadius() * 15;
                 scaledBitmapOffsets[i] = imageSize / 2;
-                scaledBitmaps[i] = scaleImage((int) imageSize);
+                scaledBitmaps[i] = scaleImage((int) imageSize, i);
             }
 
             for (int i = 0; i < dataSets.size(); i++) {
@@ -272,8 +309,8 @@ public class CalvingPeriodAnalysisActivity extends AppCompatActivity {
         }
 
 
-        private Bitmap scaleImage(int radius) {
-            return Bitmap.createScaledBitmap(image, radius, radius, false);
+        private Bitmap scaleImage(int radius, int position) {
+            return Bitmap.createScaledBitmap(createBitmapFromView(imageList[position]), radius, radius, false);
         }
     }
 }

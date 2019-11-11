@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:id="@+id/ll_custom_linear"
+<FrameLayout android:id="@+id/ll_custom_linear"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:layout_width="50dp"
+    android:layout_height="50dp"
+    android:orientation="horizontal"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_custom_image"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@color/colorAccent"/>
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        tools:background="@color/colorAccent"/>
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_custm_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:text="testing"
-        android:layout_gravity="center_vertical"/>
+        android:text="+5"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:layout_gravity="center"/>
 
-</LinearLayout>
+</FrameLayout>
