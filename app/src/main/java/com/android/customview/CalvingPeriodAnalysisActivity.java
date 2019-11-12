@@ -37,6 +37,8 @@ import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -80,8 +82,13 @@ public class CalvingPeriodAnalysisActivity extends AppCompatActivity {
 //    AppCompatTextView tvCountNo8;
     private LineChart lineChart;
     private LineData lineData;
-    private String[] images = new String[]{"https://homepages.cae.wisc.edu/~ece533/images/airplane.png",
-            "https://homepages.cae.wisc.edu/~ece533/images/arctichare.png"
+    private String[] images = new String[]{"https://homepages.cae.wisc.edu/~ece533/images/airplane.png"
+            , "https://homepages.cae.wisc.edu/~ece533/images/arctichare.png"
+            , "https://homepages.cae.wisc.edu/~ece533/images/baboon.png"
+            , "https://homepages.cae.wisc.edu/~ece533/images/baboon.png"
+            , "https://homepages.cae.wisc.edu/~ece533/images/baboon.png"
+            , "https://homepages.cae.wisc.edu/~ece533/images/arctichare.png"
+            , "https://homepages.cae.wisc.edu/~ece533/images/arctichare.png"
             , "https://homepages.cae.wisc.edu/~ece533/images/baboon.png"
             , "https://homepages.cae.wisc.edu/~ece533/images/baboon.png"
             , "https://homepages.cae.wisc.edu/~ece533/images/baboon.png"};
@@ -120,8 +127,8 @@ public class CalvingPeriodAnalysisActivity extends AppCompatActivity {
         //mFragmentHomeBinding.barChart.setMaxVisibleValueCount(6);
         float barSpace = 0f, groupSpace = 0.7f;
 
-        lineChart.setPinchZoom(false);
-        lineChart.setScaleEnabled(false);
+        lineChart.setPinchZoom(true);
+        lineChart.setScaleEnabled(true);
         lineChart.animateXY(1000, 1000);
         lineChart.getLegend().setEnabled(false);
         lineChart.getDescription().setEnabled(false);
@@ -136,7 +143,6 @@ public class CalvingPeriodAnalysisActivity extends AppCompatActivity {
         // X axis
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setAxisLineColor(R.color.black);
-        xAxis.setSpaceMin(.5f);
         xAxis.setAxisLineWidth(3f);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
@@ -148,21 +154,35 @@ public class CalvingPeriodAnalysisActivity extends AppCompatActivity {
         yAxis.setAxisLineColor(R.color.black);
         yAxis.setAxisLineWidth(3f);
         yAxis.setDrawGridLines(false);
-        yAxis.setGranularity(1); // only intervals of 1 day
+        yAxis.setGranularity(0.1f); // only intervals of 1 day
         yAxis.setGranularityEnabled(true);
 
-        lineChart.getXAxis().setAxisMinimum(0);
-        lineChart.getXAxis().setAxisMaximum(dataX.length);
-        lineChart.getAxisLeft().setAxisMinimum(0);
-        lineChart.getAxisLeft().setAxisMaximum(10);
+        xAxis.setAxisMinimum(0.5f);
+        xAxis.setAxisMaximum(getMaxFloat(dataX));
+        yAxis.setAxisMinimum(-0.7f);
+        yAxis.setAxisMaximum(24f);
         lineChart.setDragXEnabled(true);
-        lineChart.setVisibleXRangeMaximum(2);
-        lineChart.moveViewToX(1);
+        lineChart.setVisibleXRangeMaximum(7f);
+        lineChart.moveViewToX(0.5f);
+    }
+
+    public static float getMaxFloat(float[] data) {
+
+        float[] copy = Arrays.copyOf(data, data.length);
+        Arrays.sort(copy);
+        return copy[data.length - 1];
+    }
+
+    public static float getMinFloat(float[] data) {
+
+        float[] copy = Arrays.copyOf(data, data.length);
+        Arrays.sort(copy);
+        return copy[0];
     }
 
     private void setUpBlueLine() {
-        dataX = new float[]{1f, 2f, 3f, 4f, 5f};
-        dataY = new float[]{1f, 5f, 3f, 6f, 2f};
+        dataX = new float[]{1f, 1f, 3f, 4f, 5f,6f,7f,8f,9f,10f};
+        dataY = new float[]{1f, 3f, 3f, 6f, 2f,8f,5f,10f,2f,7f};
         bitmapList = new View[dataX.length];
         for (int i = 0; i < dataX.length; i++) {
             bitmapList[i] = LayoutInflater.from(this).inflate(R.layout.layout_custom_data_point, null);
@@ -185,7 +205,7 @@ public class CalvingPeriodAnalysisActivity extends AppCompatActivity {
                         for (int i = 0; i < dataX.length; i++) {
                             entries.add(i, new Entry(dataX[i], dataY[i], new BitmapDrawable(getResources(), createBitmapFromView(bitmapList[i]))));
                         }
-                        LineDataSet dataSet = new LineDataSet(entries, "");
+                        LineDataSet dataSet = new LineDataSet(entries, " \n ");
                         lineData.addDataSet(dataSet);
                         lineData.setDrawValues(false);
                         lineChart.setData(lineData);
